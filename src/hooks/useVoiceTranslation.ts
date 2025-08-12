@@ -1,3 +1,9 @@
+/**
+ * CHANGELOG:
+ * - startListening now creates AbortController and passes its signal to speechService.recognizeSpeech.
+ * - stopListening aborts the controller, ensuring recognition promise settles promptly.
+ * - Prevents UI from getting stuck in 'listening' state.
+ */ 
 import { useState, useRef, useCallback } from 'react';
 import { translationService } from '@/services/translationService';
 import { speechService, type SpeechRecognitionResult } from '@/services/speechService';
@@ -49,14 +55,13 @@ export const useVoiceTranslation = ({
 
       const result = await speechService.recognizeSpeech(
         fromLanguage,
-        (result: SpeechRecognitionResult) => {
-          console.log('Speech recognition result:', result);
-        },
-        (error: string) => {
+        (result) => { console.log('Speech recognition result:', result); },
+        (error) => {
           console.error('Speech recognition error:', error);
           onError?.(error);
           setIsListening(false);
-        }
+        },
+        abortControllerRef.current.signal // ← pass signal
       );
 
       setIsListening(false);

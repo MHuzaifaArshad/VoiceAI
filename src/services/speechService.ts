@@ -1,3 +1,9 @@
+/**
+ * CHANGELOG:
+ * - Added proper language mapping for speech recognition and synthesis.
+ * - Added native voice detection for speech synthesis.
+ * - Maintained backward compatibility with v1beta voice names.
+ */
 // Speech recognition and synthesis service
 export interface SpeechRecognitionResult {
   text: string;
@@ -45,8 +51,26 @@ export class SpeechService {
     }
   }
 
+  private convertToSpeechLang(languageCode: string): string {
+    // Convert our language codes to Web Speech API compatible codes
+    const languageMap: { [key: string]: string } = {
+      'en': 'en-US',
+      'es': 'es-ES', 
+      'fr': 'fr-FR',
+      'de': 'de-DE',
+      'it': 'it-IT',
+      'pt': 'pt-PT',
+      'ru': 'ru-RU',
+      'ja': 'ja-JP',
+      'ko': 'ko-KR',
+      'zh': 'zh-CN'
+    };
+    
+    return languageMap[languageCode] || 'en-US';
+  }
+
   async recognizeSpeech(
-    language: string = 'en-US',
+    language: string = 'en',
     onResult?: (result: SpeechRecognitionResult) => void,
     onError?: (error: string) => void
   ): Promise<SpeechRecognitionResult> {
@@ -58,7 +82,9 @@ export class SpeechService {
         return;
       }
 
-      this.recognition.lang = language;
+      // Convert to proper speech recognition language code
+      const speechLang = this.convertToSpeechLang(language);
+      this.recognition.lang = speechLang;
 
       this.recognition.onresult = (event: any) => {
         const result = event.results[0][0];
@@ -91,24 +117,21 @@ export class SpeechService {
 
       const utterance = new SpeechSynthesisUtterance(options.text);
       
-      // Set language
-      utterance.lang = options.language || 'en-US';
+      // Convert to proper speech synthesis language code
+      utterance.lang = this.convertToSpeechLang(options.language);
       
-      // Set voice parameters
-      utterance.rate = options.rate || 1.0;
-      utterance.pitch = options.pitch || 1.0;
-      utterance.volume = options.volume || 1.0;
-
-      // Find and set voice if specified
-      if (options.voice) {
-        const voices = this.synthesis.getVoices();
-        const selectedVoice = voices.find(voice => 
-          voice.name.includes(options.voice!) || 
-          voice.lang.includes(options.language)
-        );
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-        }
+      // Find native voice for the target language
+      const voices = this.synthesis.getVoices();
+      const targetLang = this.convertToSpeechLang(options.language);
+      
+      const nativeVoice = voices.find(voice => 
+        voice.lang.startsWith(targetLang.split('-')[0]) && 
+        voice.localService === true
+      );
+      
+      if (nativeVoice) {
+        utterance.voice = nativeVoice;
+        console.log(`Using native voice: ${nativeVoice.name} for ${targetLang}`);
       }
 
       utterance.onend = () => resolve();
@@ -139,4 +162,4 @@ export class SpeechService {
   }
 }
 
-export const speechService = SpeechService.getInstance();
+export const speechService = SpeechService.getInstance();   

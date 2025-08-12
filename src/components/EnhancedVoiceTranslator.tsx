@@ -14,24 +14,83 @@ interface TranslationMessage extends VoiceTranslationResult {
 }
 
 const LANGUAGES = [
-  { code: 'en-US', name: 'English', display: 'English' },
-  { code: 'es-ES', name: 'Spanish', display: 'Español' },
-  { code: 'fr-FR', name: 'French', display: 'Français' },
-  { code: 'de-DE', name: 'German', display: 'Deutsch' },
-  { code: 'it-IT', name: 'Italian', display: 'Italiano' },
-  { code: 'pt-PT', name: 'Portuguese', display: 'Português' },
-  { code: 'ru-RU', name: 'Russian', display: 'Русский' },
-  { code: 'ja-JP', name: 'Japanese', display: '日本語' },
-  { code: 'ko-KR', name: 'Korean', display: '한국어' },
-  { code: 'zh-CN', name: 'Chinese', display: '中文' },
-  { code: 'ar-SA', name: 'Arabic', display: 'العربية' },
-  { code: 'hi-IN', name: 'Hindi', display: 'हिन्दी' },
+  { 
+    code: 'en', 
+    name: 'English', 
+    display: 'English',
+    speechCode: 'en-US',  // For Web Speech API
+    geminiName: 'English' // For Gemini API
+  },
+  { 
+    code: 'es', 
+    name: 'Spanish', 
+    display: 'Español',
+    speechCode: 'es-ES',
+    geminiName: 'Spanish'
+  },
+  { 
+    code: 'fr', 
+    name: 'French', 
+    display: 'Français',
+    speechCode: 'fr-FR',
+    geminiName: 'French'
+  },
+  { 
+    code: 'de', 
+    name: 'German', 
+    display: 'Deutsch',
+    speechCode: 'de-DE',
+    geminiName: 'German'
+  },
+  { 
+    code: 'it', 
+    name: 'Italian', 
+    display: 'Italiano',
+    speechCode: 'it-IT',
+    geminiName: 'Italian'
+  },
+  { 
+    code: 'pt', 
+    name: 'Portuguese', 
+    display: 'Português',
+    speechCode: 'pt-PT',
+    geminiName: 'Portuguese'
+  },
+  { 
+    code: 'ru', 
+    name: 'Russian', 
+    display: 'Русский',
+    speechCode: 'ru-RU',
+    geminiName: 'Russian'
+  },
+  { 
+    code: 'ja', 
+    name: 'Japanese', 
+    display: '日本語',
+    speechCode: 'ja-JP',
+    geminiName: 'Japanese'
+  },
+  { 
+    code: 'ko', 
+    name: 'Korean', 
+    display: '한국어',
+    speechCode: 'ko-KR',
+    geminiName: 'Korean'
+  },
+  { 
+    code: 'zh', 
+    name: 'Chinese', 
+    display: '中文',
+    speechCode: 'zh-CN',
+    geminiName: 'Chinese'
+  }
+  // Remove Arabic and Hindi for now - Web Speech API doesn't support them well
 ];
 
 export const EnhancedVoiceTranslator: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('en-US');
-  const [targetLanguage, setTargetLanguage] = useState('es-ES');
+  const [currentLanguage, setCurrentLanguage] = useState('en');  // Changed from 'en-US'
+  const [targetLanguage, setTargetLanguage] = useState('es');   // Changed from 'es-ES'
   const [messages, setMessages] = useState<TranslationMessage[]>([]);
   const [connectedUsers, setConnectedUsers] = useState(3);
   const { toast } = useToast();

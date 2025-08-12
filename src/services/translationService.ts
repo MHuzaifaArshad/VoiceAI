@@ -1,6 +1,7 @@
 // Translation service using Gemini API
-const GEMINI_API_KEY = 'AIzaSyAL0fJ-NSkD1sC67FbhpYBu2Xsfo4UbHLU';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const MODEL = 'gemini-1.5-flash'; // or 'gemini-1.5-pro'
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/${MODEL}:generateContent`;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export interface TranslationRequest {
   text: string;
@@ -23,10 +24,30 @@ export class TranslationService {
     return TranslationService.instance;
   }
 
+  private getLanguageName(languageCode: string): string {
+    const languageNames: { [key: string]: string } = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French', 
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'zh': 'Chinese'
+    };
+    
+    return languageNames[languageCode] || 'English';
+  }
+
   async translateText({ text, fromLanguage, toLanguage }: TranslationRequest): Promise<TranslationResponse> {
     try {
-      const prompt = `Translate the following text from ${fromLanguage} to ${toLanguage}. 
-      Only return the translated text, nothing else.
+      const fromLangName = this.getLanguageName(fromLanguage);
+      const toLangName = this.getLanguageName(toLanguage);
+      
+      const prompt = `Translate the following text from ${fromLangName} to ${toLangName}. 
+      Only return the translated text, nothing else. Do not include any explanations or additional text.
       
       Text to translate: "${text}"`;
 
