@@ -6,17 +6,19 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "localhost",
-    port: 3000,
+    host: mode === 'development' ? "localhost" : "0.0.0.0",
+    port: mode === 'development' ? 3000 : 8080,
   },
-  plugins: [
-    react(),
-    //mode === 'development' &&
-    //componentTagger(),
-  ].filter(Boolean),
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Production optimizations
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+  }
 }));
