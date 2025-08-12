@@ -1,3 +1,10 @@
+/**
+ * CHANGELOG:
+ * - Added native voice detection for speech synthesis in target language.
+ * - Added info card with how it works.
+ * - Fixed translation history badge to use actual language names.
+ * - Updated Web Speech API language codes to match actual browser support.
+ */
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -89,8 +96,8 @@ const LANGUAGES = [
 
 export const EnhancedVoiceTranslator: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('en');  // Changed from 'en-US'
-  const [targetLanguage, setTargetLanguage] = useState('es');   // Changed from 'es-ES'
+  const [currentLanguage, setCurrentLanguage] = useState('en-US');
+  const [targetLanguage, setTargetLanguage] = useState('es-ES');
   const [messages, setMessages] = useState<TranslationMessage[]>([]);
   const [connectedUsers, setConnectedUsers] = useState(3);
   const { toast } = useToast();
